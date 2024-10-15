@@ -37,12 +37,12 @@ function operacionesTrigonometricas(typeOfFuntion) {
         if (typeOfFuntion == 'tan') screen.textContent = Math.tan(radianes).toFixed(4);
 
         if (typeOfFuntion == 'sqrt') screen.textContent = Math.sqrt(parseInt(screen.textContent)).toFixed(4);
-        
+
         if (typeOfFuntion == 'log') screen.textContent = Math.log(parseInt(screen.textContent)).toFixed(4);
     }
 
     canClear = true;
-    
+
     if (typeOfFuntion == 'pow' && !firstNumber) {
         asignarPrimerNumero();
         memory.textContent = `${firstNumber} ^`;
@@ -89,6 +89,25 @@ function cambiarOperador(newOperacion, signo) {
     // console.log(newOperacion, operationActual, screen.textContent, firstNumber)
     if (screen.textContent > 0 && newOperacion == operationActual) {
         return true;
+    } else if (screen.textContent > 0 && newOperacion != operationActual) {
+        asignarsegundoNumero();
+        if (operationActual == 'sumar') {
+            firstNumber += secondNumber;
+
+        } else if (operationActual == 'restar') {
+            firstNumber -= secondNumber;
+
+        } else if (operationActual == 'multiplicar') {
+            firstNumber *= secondNumber;
+
+        } else if (operationActual == 'dividir') {
+            firstNumber /= secondNumber;
+        }
+        memory.textContent = `${firstNumber} ${signo}`;
+        screen.textContent = '0';
+        operationActual = newOperacion;
+        secondNumber = 0;
+
     } else {
         operationActual = newOperacion;
         memory.textContent = `${firstNumber} ${signo}`
@@ -107,7 +126,6 @@ function operacionesSimples(operacion) {
 
         } else if (firstNumber && !secondNumber) {
             if (cambiarOperador(operacion, '+') && operacion == operationActual) {
-                console.log(operationActual)
                 asignarsegundoNumero();
 
                 memory.textContent = `${firstNumber + secondNumber} +`;
