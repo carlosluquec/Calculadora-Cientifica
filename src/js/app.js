@@ -4,7 +4,7 @@ const btns = document.querySelectorAll('.btn');
 
 let firstNumber;
 let secondNumber;
-let operationAcual;
+let operationActual;
 
 let canClear = false;
 
@@ -37,12 +37,18 @@ function operacionesTrigonometricas(typeOfFuntion) {
         if (typeOfFuntion == 'tan') screen.textContent = Math.tan(radianes).toFixed(4);
 
         if (typeOfFuntion == 'sqrt') screen.textContent = Math.sqrt(parseInt(screen.textContent)).toFixed(4);
-
-        if (typeOfFuntion == 'pow') screen.textContent = Math.pow(parseInt(screen.textContent));
-
+        
         if (typeOfFuntion == 'log') screen.textContent = Math.log(parseInt(screen.textContent)).toFixed(4);
     }
+
     canClear = true;
+    
+    if (typeOfFuntion == 'pow' && !firstNumber) {
+        asignarPrimerNumero();
+        memory.textContent = `${firstNumber} ^`;
+        operationActual = 'pow';
+        canClear = false;
+    }
 }
 
 function factorial(n) {
@@ -54,135 +60,150 @@ function factorial(n) {
 
 function inputScreen(key) {
     // NO REPITE PUNTO HE IMPRIME LOS NUMEROS
-    if (screen.innerHTML.split('').find(string => string == '.') == key) {
+    if (screen.innerHTML
+        .split('')
+        .find(string => string == '.') == key) {
         return
     } else {
-        if(key == '.' && screen.textContent == 0){
+        if (key == '.' && screen.textContent == 0) {
             screen.textContent = '0.';
-        }else {
+        } else {
             screen.textContent += key;
         }
     }
 }
 
-function asignarPrimerNumero(){
-    firstNumber = screen.textContent.split('').find(caracter => caracter == '.') == '.'? parseFloat(screen.textContent): parseInt(screen.textContent);
+function asignarPrimerNumero() {
+    firstNumber = screen.textContent
+        .split('')
+        .find(caracter => caracter == '.') == '.' ? parseFloat(screen.textContent) : parseInt(screen.textContent);
 
     screen.textContent = '0';
 }
 
-function asignarsegundoNumero(){
-    secondNumber = screen.textContent.split('').find(caracter => caracter == '.') == '.'? parseFloat(screen.textContent): parseInt(screen.textContent);
+function asignarsegundoNumero() {
+    secondNumber = screen.textContent.split('').find(caracter => caracter == '.') == '.' ? parseFloat(screen.textContent) : parseInt(screen.textContent);
 }
 
-function cambiarOperador(newOperacion){
-    console.log(newOperacion, operationAcual, screen.textContent, firstNumber)
-    if(screen.textContent > 0 && newOperacion == operationAcual){
+function cambiarOperador(newOperacion, signo) {
+    // console.log(newOperacion, operationActual, screen.textContent, firstNumber)
+    if (screen.textContent > 0 && newOperacion == operationActual) {
         return true;
     } else {
-        memory.textContent = `${firstNumber} ${newOperacion}`
-        return false
+        operationActual = newOperacion;
+        memory.textContent = `${firstNumber} ${signo}`
+        return false;
     }
 }
 
 function operacionesSimples(operacion) {
     canClear = false;
-    console.log(operacion)
-    if(operacion == 'sumar'){
+
+    if (operacion == 'sumar') {
         if (!firstNumber && !secondNumber) {
             asignarPrimerNumero();
             memory.textContent = `${firstNumber} +`;
-            operationAcual = operacion;
-    
+            operationActual = operacion;
+
         } else if (firstNumber && !secondNumber) {
-            cambiarOperador(operacion);
-            asignarsegundoNumero();
-    
-            memory.textContent = `${firstNumber + secondNumber} +`;
-            firstNumber += secondNumber;
-            secondNumber = 0;
-            screen.textContent = '0';
+            if (cambiarOperador(operacion, '+') && operacion == operationActual) {
+                console.log(operationActual)
+                asignarsegundoNumero();
+
+                memory.textContent = `${firstNumber + secondNumber} +`;
+                firstNumber += secondNumber;
+                secondNumber = 0;
+                screen.textContent = '0';
+            }
         }
-    }else if(operacion == 'restar'){
+    } else if (operacion == 'restar') {
         if (!firstNumber && !secondNumber) {
             asignarPrimerNumero();
             memory.textContent = `${firstNumber} -`;
-            operationAcual = operacion;
-    
-        } else if (firstNumber && !secondNumber) {
-            if (cambiarOperador(operacion)){
+            operationActual = operacion;
 
+        } else if (firstNumber && !secondNumber) {
+            if (cambiarOperador(operacion, '-') && operacion == operationActual) {
+                asignarsegundoNumero();
+
+                memory.textContent = `${firstNumber - secondNumber} -`;
+                firstNumber -= secondNumber;
+                secondNumber = 0;
+                screen.textContent = '0';
             }
-            asignarsegundoNumero();
-    
-            memory.textContent = `${firstNumber - secondNumber} -`;
-            firstNumber -= secondNumber;
-            secondNumber = 0;
-            screen.textContent = '0';
         }
-    }else if(operacion == 'multiplicar'){
+    } else if (operacion == 'multiplicar') {
         if (!firstNumber && !secondNumber) {
             asignarPrimerNumero();
             memory.textContent = `${firstNumber} x`;
-            operationAcual = operacion;
-    
+            operationActual = operacion;
+
         } else if (firstNumber && !secondNumber) {
-            cambiarOperador(operacion);
-            asignarsegundoNumero();
-    
-            memory.textContent = `${firstNumber * secondNumber} x`;
-            firstNumber *= secondNumber;
-            secondNumber = 0;
-            screen.textContent = '0';
+            if (cambiarOperador(operacion, 'x') && operacion == operationActual) {
+                asignarsegundoNumero();
+
+                memory.textContent = `${firstNumber * secondNumber} x`;
+                firstNumber *= secondNumber;
+                secondNumber = 0;
+                screen.textContent = '0';
+            }
         }
-    }else if(operacion == 'dividir'){
+    } else if (operacion == 'dividir') {
         if (!firstNumber && !secondNumber) {
             asignarPrimerNumero();
             memory.textContent = `${firstNumber} ÷`;
-            operationAcual = operacion;
-    
+            operationActual = operacion;
+
         } else if (firstNumber && !secondNumber) {
-            cambiarOperador(operacion);
-            asignarsegundoNumero();
-    
-            memory.textContent = `${firstNumber / secondNumber} ÷`;
-            firstNumber /= secondNumber;
-            secondNumber = 0;
-            screen.textContent = '0';
+            if (cambiarOperador(operacion, '+') && operacion == operationActual) {
+                asignarsegundoNumero();
+
+                memory.textContent = `${firstNumber / secondNumber} ÷`;
+                firstNumber /= secondNumber;
+                secondNumber = 0;
+                screen.textContent = '0';
+            }
         }
     }
 }
 
-function resultado(){
+function resultado() {
     asignarsegundoNumero();
 
-    if(operationAcual == 'sumar'){
+    if (operationActual == 'pow') {
+        memory.textContent = ' ';
+        screen.textContent = Math.pow(firstNumber, secondNumber);
+    }
+
+    if (operationActual == 'sumar') {
         screen.textContent = firstNumber + secondNumber;
         memory.textContent = ' ';
     }
 
-    if(operationAcual == 'restar'){
+    if (operationActual == 'restar') {
         screen.textContent = firstNumber - secondNumber;
         memory.textContent = ' ';
     }
 
-    if(operationAcual == 'multiplicar'){
+    if (operationActual == 'multiplicar') {
         screen.textContent = firstNumber * secondNumber;
         memory.textContent = ' ';
     }
 
-    if(operationAcual == 'dividir'){
+    if (operationActual == 'dividir') {
         screen.textContent = firstNumber / secondNumber;
         memory.textContent = ' ';
     }
     canClear = true
 }
+
 btns.forEach(btn => {
     btn.addEventListener('click', () => {
         if (btn.textContent < 10 && btn.textContent >= 0 || btn.textContent == '.') {
             if (canClear == true) resetScreens();
             // SI AL INICIAR ES CERO LO ELIMINA Y COLOCA EL QUE SE DIGITO
             if (screen.textContent == '0') screen.textContent = '';
+
             inputScreen(btn.textContent);
         }
 
@@ -214,7 +235,7 @@ btns.forEach(btn => {
             btn.value == 'sqrt' ||
             btn.value == 'e' ||
             btn.value == 'pow') operacionesTrigonometricas(btn.value);
-        
-        if(btn.value == 'btn-iqual') resultado();
+
+        if (btn.value == 'btn-iqual') resultado();
     })
 });
